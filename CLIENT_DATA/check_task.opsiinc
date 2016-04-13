@@ -1,0 +1,33 @@
+; This sourcecode published under the Terms of the General Public License.
+; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
+; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
+
+
+;==========================================================================================================
+; Functions
+
+; Checks if a running Office program is found
+[sub_checkfunktion]
+set $currentchecktask$ = "%task%"
+set $tasklist$ = getOutStreamFromSection('DosInAnIcon_checkprocess')
+if ( count($tasklist$) INT> "1")
+  set $processVAR$ = unquote(takeString(1,$tasklist$), '"')
+ 
+  if ($processVAR$ = $currentchecktask$)
+    Message = "Office process found: " + $currentchecktask$
+    if ($showofficedialog$ = "true")
+  	  pause $taskmessage$ 
+    endif 
+
+	  if ($fatalerror$ = "true")
+		  isFatalError "Running Office programs found"
+	  else
+      isSuspended 
+    endif
+  endif 
+endif
+ 
+; Returns tasklist as array
+[DosInAnIcon_checkprocess]
+@echo off
+TASKLIST /FI "IMAGENAME eq $currentchecktask$" /fo CSV

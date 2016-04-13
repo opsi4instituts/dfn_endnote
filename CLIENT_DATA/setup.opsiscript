@@ -1,0 +1,130 @@
+; This sourcecode published under the Terms of the General Public License.
+; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
+; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
+
+[Actions]
+;==========================================================================================================
+; Includes
+include_insert "common.opsiinc"
+include_append "section_linkfolder.opsiinc"
+
+;==========================================================================================================
+; Variables 
+
+DefVar $TransformFile$ 
+DefVar $TransformString$
+DefVar $forcereinstall$
+DefVar $TmpSubDirectory$
+
+DefVar $INSTALLALLCONTENTFILES$
+DefVar $FFTUSEISILINKS$
+DefVar $FFTUSEPUBMED$
+DefVar $FFTUSEDOI$
+DefVar $FFTUSEOPENURL$
+DefVar $USERCANAPPLYUPDATES$
+DefVar $FFTOPENURLRESOLVER$      
+DefVar $FFTAUTHENTICATEURL$ 
+
+;-------------------------------------------------------------------------------
+; Setting variables for setup
+Set $uninstall$				         = "false"
+Set $TmpSubDirectory$          = "endnote-opsi"
+;-------------------------------------------------------------------------------
+; Setting variables with properties from OPSI
+Set $forcereinstall$           = GetProductProperty("forcereinstall", "false")
+Set $TransformFile$            = GetProductProperty("transform-file","none")
+Set $INSTALLALLCONTENTFILES$   = GetProductProperty("INSTALLALLCONTENTFILES","yes")
+Set $FFTUSEISILINKS$           = GetProductProperty("FFTUSEISILINKS","T")
+Set $FFTUSEPUBMED$             = GetProductProperty("FFTUSEPUBMED","T")
+Set $FFTUSEDOI$                = GetProductProperty("FFTUSEDOI","T")
+Set $FFTUSEOPENURL$            = GetProductProperty("FFTUSEOPENURL","F")
+Set $USERCANAPPLYUPDATES$      = GetProductProperty("USERCANAPPLYUPDATES","F")
+Set $FFTOPENURLRESOLVER$       = GetProductProperty("FFTOPENURLRESOLVER","")
+Set $FFTAUTHENTICATEURL$       = GetProductProperty("FFTAUTHENTICATEURL","")
+
+;==========================================================================================================
+; Program logic
+
+; Checking space on hard drive for installation
+if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
+	LogError "Not enough space on %SystemDrive%, " + $MinimumSpace$ + " on drive %SystemDrive% needed for " + $ProductId$
+	isFatalError "Not enough space on hard drive"
+	;Stop process and set installation status to failed
+else
+  ; Checking if transform file is required and if yes, if available in custom folder
+  if (not($TransformFile$ = "none") AND not($TransformFile$ = "") )
+    if (FileExists("%ScriptPath%\custom\" + $TransformFile$))
+      Set $TransformString$ = "TRANSFORMS=%ScriptPath%\custom\"+$TransformFile$
+    else 
+    	LogError "Transformation file entered in the configuration editor, but no file found in custom directory. Please read the README.txt file in the script directory of this package"
+	    isFatalError "No transformation file found."
+    endif
+  else 
+    Set $TransformFile$ = ""
+  endif
+  
+  ; Checking if license file is available in custom folder
+  if (not(FileExists("%ScriptPath%\custom\License.dat")))
+    LogError "License.dat file not found in custom folder. Please read the README.txt file in the script directory of this package"
+	  isFatalError "No license file found in custom folder."
+  endif
+
+	Message "Installing " + $ProductId$ + "." + $SubProgramVersion$ + " ..."
+	comment "Start setup program"
+  
+  ; Removing previous installations, if wanted
+	if (FileExists("%ScriptPath%\delsub.opsiscript"))
+	  if ($forcereinstall$ = "true") 
+	    Set $uninstall$	= "true"
+	  endif
+	  Sub "%ScriptPath%\delsub.opsiscript"
+	endif
+	
+  ; Just install the base program if not already installed or if set to forcereinstall in config ed. After installation there is no need for running the update script
+  if (($forcereinstall$ = "true") or ( (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") and (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") ) )
+    comment "Installing Endnote base program"
+    message "Installing Endnote base program"
+    sub_install
+    noUpdateScript
+	  
+	  ; Include post install file in custom folder via OPSI property 
+	  comment "include custom post install file"
+    set $CustomPostInstall$ = getProductProperty("custom-post-install","none")
+    if not ($CustomPostInstall$ = "none")
+	    if FileExists("%ScriptPath%\custom\" + $CustomPostInstall$)
+		    include_insert "%ScriptPath%\custom\" + $CustomPostInstall$
+	    endif
+    endif
+	endif
+	
+  ; Setting the desktop icon or removing it - as set in the config editor
+  if $Property_DesktopIcon$ = "True"
+    LinkFolder_create
+  else
+    LinkFolder_delete
+  endif
+	
+endif
+
+
+;==========================================================================================================
+; Functions
+
+[sub_install]
+; Copys the installation and the license file to the target host, installs them and removes the files after. Also checks exit codes.
+Files_copy_license
+Sub_check_exitcode
+Winbatch_install
+Sub_check_exitcode
+Files_delete_tmp
+Sub_check_exitcode
+
+[Winbatch_install]
+msiexec /passive /norestart /i "$LogDir$\$TmpSubDirectory$\$MSIInstaller$" $TransformString$ INSTALLALLCONTENTFILES="$INSTALLALLCONTENTFILES$" FFTUSEISILINKS="$FFTUSEISILINKS$" FFTUSEPUBMED="$FFTUSEPUBMED$" FFTUSEDOI="$FFTUSEDOI$" FFTUSEOPENURL="$FFTUSEOPENURL$" FFTOPENURLRESOLVER="$FFTOPENURLRESOLVER$" USERCANAPPLYUPDATES="$USERCANAPPLYUPDATES$" FFTAUTHENTICATEURL="$FFTAUTHENTICATEURL$" /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=2 REBOOT=ReallySuppress 
+
+[Files_copy_license]
+copy "%ScriptPath%\files\ENX7Inst.msi" "$LogDir$\$TmpSubDirectory$"
+copy "%ScriptPath%\custom\License.dat" "$LogDir$\$TmpSubDirectory$"
+
+[Files_delete_tmp]
+del "$LogDir$\$TmpSubDirectory$\"

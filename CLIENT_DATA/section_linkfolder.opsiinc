@@ -1,0 +1,26 @@
+; This sourcecode published under the Terms of the General Public License.
+; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
+; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
+
+;==========================================================================================================
+; Functions
+
+; Creates an shortcut to the installed exe on AllUsers desktop
+[LinkFolder_create]
+set_basefolder common_desktopdirectory
+set_subfolder ""
+set_link
+       name: $DesktopIconName$
+       target: $PathToExe$
+       parameters:
+       working_dir: $InstallDir$
+       icon_file:
+       icon_index:
+end_link
+
+
+; Deletess an shortcut to the installed exe on AllUsers desktop
+[LinkFolder_delete]
+set_basefolder common_desktopdirectory
+set_subfolder ""
+delete_element $DesktopIconName$

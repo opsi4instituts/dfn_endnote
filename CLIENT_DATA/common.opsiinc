@@ -1,0 +1,105 @@
+; This sourcecode published under the Terms of the General Public License.
+; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
+; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
+
+setloglevel = 6
+;  Log Errors in Logfile but don't abort:
+ExitOnError=false
+; Show syntax errors in the script:
+ScriptErrorMessages=on
+; Dont trace step by step through the script:
+TraceMode=off
+; let started programs run in front of the winst window
+StayOnTop=false
+
+requiredWinstVersion >= "4.11.5.0"
+
+;==========================================================================================================
+; Includes
+include_insert "insert_check_exit_code.opsiinc"
+include_append "check_task.opsiinc"
+
+
+;==========================================================================================================
+; Variables 
+
+DefVar $ProductId$
+DefVar $PrettyName$
+DefVar $InstallDir$    
+DefVar $PathToExe$
+DefVar $DesktopIconName$
+DefVar $Property_DesktopIcon$
+DefVar $ProgramVersion$	
+DefVar $SubProgramVersion$	
+DefVar $MsiId$ 
+DefVar $LogDir$
+DefVar $ComboUpdatePatch$
+DefVar $MinimumSpace$
+DefVar $MSIInstaller$
+DefVar $uninstall$	
+DefVar $Exe$	
+DefVar $remove_old_versions$
+DefVar $CustomPostInstall$
+DefVar $DesiredRegistryUpdateVersion$
+DefVar $RegistryInstallerClass$ 
+
+; Checktask
+DefVar $processVAR$
+DefVar $currentchecktask$
+DefVar $fatalerror$
+DefVar $taskmessage$
+DefVar $showofficedialog$
+DefStringList $tasklist$
+DefStringList $process$
+DefStringList $SearchProcess$
+
+
+;----------------------------------------------------------------------------------------------
+; USUALLY FOR AN PROGRAM UPDATE THIS IS THE ONLY PLACE WHERE VALUES OUGHT TO BE CHANGED, EXCEPT PUTTING THE OLD MSI-ID TO DELSUB
+; Setting common variables
+
+Set $PrettyName$		               = "Endnote X7"
+Set $DesiredRegistryUpdateVersion$ = "285540352"    
+Set $InstallDir$      						 = "%ProgramFiles32Dir%\EndNote X7"
+Set $MsiId$ 				            	 = '{86B3F2D6-AC2B-0017-8AE1-F2F77F781B0C}'
+Set $MSIInstaller$		             = "ENX7Inst.msi"
+Set $MinimumSpace$                 = "510 MB"
+Set $Exe$													 = "EndNote.exe"
+Set $ComboUpdatePatch$             = "ENX75ComboUpdate.msp"
+;This value can be found at [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Installer\Products\ -> search for Endnote
+Set $RegistryInstallerClass$       = "6D2F3B68B2CA7100A81E2F7FF787B1C0"
+
+
+;----------------------------------------------------------------------------------------------
+; Further common values. After an update, these should stay as they are.
+
+Set $ProductId$                    = "dfn_endnote"
+Set $ProgramVersion$               = strPart("%installingProdVersion%", "1", calculate(strPos("%installingProdVersion%","-") + "-" + "1" ))
+Set $SubProgramVersion$	           = takestring ("1",(splitString ($ProgramVersion$ , ".")))
+Set $LogDir$                       = "%SystemDrive%\tmp"
+Set $Property_DesktopIcon$         = GetProductProperty("desktopicon", "true")
+Set $DesktopIconName$ 				 		 = $PrettyName$ 
+Set $PathToExe$         				 	 = $InstallDir$ + "\" + $Exe$
+Set $remove_old_versions$			     = GetProductProperty("remove-old-versions","true") 
+          
+; Checktask settings
+set $searchProcess$ = createStringList ('OUTLOOK.EXE','WINWORD.EXE','POWERPNT.EXE','ONENOTE.EXE','VISIO.EXE','EXCEL.EXE','MSPUB.EXE', 'MSACCESS.EXE')
+; Report a FATALERROR to opsiconfd 
+set $fatalerror$ = GetProductProperty("checktask-fatal-error","false") 
+; Show message before starting setup
+set $taskmessage$ = "Offene Office Anwendungen (Outlook, Word, Powerpoint....) gefunden, Installation abgebrochen."
+set $showofficedialog$ = GetProductProperty("checktask-show-dialog","true") 
+
+
+
+;==========================================================================================================
+; Program logic
+
+comment "Show product picture"
+ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $PrettyName$ + "." + $SubProgramVersion$
+
+; Find running Office tasks and treat like set in OPSI properties 
+for %task% in $SearchProcess$ do sub_checkfunktion
+
+; Kill running Endnote task
+Killtask $Exe$

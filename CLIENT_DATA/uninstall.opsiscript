@@ -1,0 +1,34 @@
+; This sourcecode published under the Terms of the General Public License.
+; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
+; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
+
+[Actions]
+;==========================================================================================================
+; Includes
+include_insert "common.opsiinc"
+include_append "section_linkfolder.opsiinc"
+
+;==========================================================================================================
+; Variables
+DefVar $CustomPostDeinstall$
+
+;==========================================================================================================
+; Program logic
+
+; Uninstall via delsub
+Message "Uninstalling " + $ProductId$ + " ..."
+Set $uninstall$	= "true"
+comment "Start uninstall sub section"
+Sub "%ScriptPath%\delsub.opsiscript"
+
+; Make sure the desktop icon gets deleted as well.
+LinkFolder_delete
+
+; Include post deinstall file in custom folder via OPSI property 
+comment "include custom post deinstall file"
+set $CustomPostDeinstall$ = getProductProperty("custom-post-deinstall","none")
+if not ($CustomPostDeinstall$ = "none")
+	if FileExists("%ScriptPath%\custom\" + $CustomPostDeinstall$)
+		include_insert "%ScriptPath%\custom\" + $CustomPostDeinstall$
+	endif
+endif

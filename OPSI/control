@@ -1,0 +1,159 @@
+[Package]
+version: 1
+depends:
+incremental: False
+
+[Product]
+type: localboot
+id: dfn_endnote
+name: Endnote
+description: EndNote ist ein Literaturverwaltungsprogramm, welches sich auch als Plugin in Microsoft Office integriert. // EndNote is a reference management software, which integrates in Microsoft Office.
+advice: Programme von Microsoft Office oder LibreOffice/OpenOffice muessen fuer die Installation geschlossen sein, bei einem Update gilt das auch für Endnote. Saemtliche andere auf dem Rechner installierte Versionen von Endnote werden bei der Installation entfernt. // Microsoft Office programs have to be closed on installtion. Older versions of Endnote will be removed on installation.
+version: 17.5.0
+priority: 0
+licenseRequired: False
+productClasses:
+setupScript: setup.opsiscript
+uninstallScript: uninstall.opsiscript
+updateScript: update.opsiscript
+alwaysScript: 
+onceScript: 
+customScript: 
+userLoginScript: 
+
+[ProductProperty]
+type: bool
+name: forcereinstall
+description: Force reinstall of complete base package if already installed instead of update.
+default: False
+
+[ProductProperty]
+type: bool
+name: desktopicon
+description: Generate or delete desktop icon.
+default: True
+
+[ProductProperty]
+type: unicode
+name: transform-file
+multivalue: False
+editable: True
+description: The name of a mst file located in custom folder.
+values: [""]
+default: [""]
+
+[ProductProperty]
+type: unicode
+name: fftuseisilinks
+multivalue: False
+editable: False
+description: Select or deselect the “Web of Knowledge Full Text Links” check box. Please check the EndNote manual for further information.
+values: ["F", "T"]
+default: ["T"]
+
+[ProductProperty]
+type: unicode
+name: fftusedoi
+multivalue: False
+editable: False
+description: Select or deselect the "DOI" check box. Please check the EndNote manual for further information.
+values: ["F", "T"]
+default: ["T"]
+
+[ProductProperty]
+type: unicode
+name: fftusepubmed
+multivalue: False
+editable: False
+description: Select or deselect the “PubMed LinkOut” check box. Please check the EndNote manual for further information.
+values: ["F", "T"]
+default: ["T"]
+
+[ProductProperty]
+type: unicode
+name: fftuseopenurl
+multivalue: False
+editable: False
+description: Select or deselect the “OpenURL” check box. Please check the EndNote manual for further information.
+values: ["F", "T"]
+default: ["F"]
+
+[ProductProperty]
+type: unicode
+name: fftopenurlresolver
+multivalue: False
+editable: True
+description: URL for the “OpenURL Path” text box. Please check the EndNote manual for further information.
+values: [""]
+default: [""]
+
+[ProductProperty]
+type: unicode
+name: fftauthenticateurl
+multivalue: False
+editable: True
+description: URL for the “Authenticate with URL” text box. Please check the EndNote manual for further information.
+values: [""]
+default: [""]
+
+[ProductProperty]
+type: unicode
+name: installallcontentfiles
+multivalue: False
+editable: False
+description: Customize the installation via properties in opsi config editor (instprop) or via transformation file (.mst) in custom folder.
+values: ["no", "yes"]
+default: ["yes"]
+
+[ProductProperty]
+type: unicode
+name: usercanapplyupdates
+multivalue: False
+editable: False
+description: Let user apply updates. Please check the EndNote manual for further information.
+values: ["F", "T"]
+default: ["F"]
+
+[ProductProperty]
+type: unicode
+name: custom-post-install
+multivalue: False
+editable: False
+description: Define filename for include script in custom directory after installation.
+values: ["none", "post-install.opsiinc"]
+default: ["none"]
+
+[ProductProperty]
+type: unicode
+name: custom-post-deinstall
+multivalue: False
+editable: False
+description: Define filename for include script in custom directory after deinstallation.
+values: ["none", "post-deinstall.opsiinc"]
+default: ["none"]
+
+[ProductProperty]
+type: bool
+name: remove-old-versions
+description: Remove earlier installed versions of Endnote on this machine.
+default: True
+
+[ProductProperty]
+type: bool
+name: checktask-fatal-error
+description: Set script to fatal error if running office programms are found. Otherwise the script ends, but the product stays on setup. Feature for software-on-demand.
+default: False
+
+[ProductProperty]
+type: bool
+name: checktask-show-dialog
+description: Show dialog to the user which office program prevents the installation of Endnote. Feature for software-on-demand.
+default: True
+
+[Changelog]
+
+endnote (16-1) testing; urgency=low
+
+  * Initial package
+
+ -- Eric Esser <esser@wzb.eu>  Wed, 28 Nov 2012 16:46:02 +0000

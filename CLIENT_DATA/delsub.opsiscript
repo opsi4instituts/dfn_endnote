@@ -1,0 +1,81 @@
+; This sourcecode published under the Terms of the General Public License.
+; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
+; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
+
+
+;==========================================================================================================
+; Variables
+
+DefVar $UninstMsiId$ 
+DefVar $UninstName$ 
+DefVar $UninstallProgram$ 
+DefVar $UninstallLog$
+DefStringList $UninstList$ 
+DefStringList $UninstTempList$ 
+
+; Setting variables for delsub, please put the new old MSI id here after update
+Set $UninstList$ = addtolist($UninstList$, "Endnote 8='{27625A79-D272-41EF-844B-6EAC87D4A51E}'")
+Set $UninstList$ = addtolist($UninstList$, "Endnote X2='{002B1E90-3241-4D45-8831-E89020F8E7E6}'")
+Set $UninstList$ = addtolist($UninstList$, "Endnote X4='{86B3F2D6-AC2B-0014-8AE1-F2F77F781B0C}'")
+Set $UninstList$ = addtolist($UninstList$, "Endnote X5='{86B3F2D6-AC2B-0015-8AE1-F2F77F781B0C}'")
+Set $UninstList$ = addtolist($UninstList$, "Endnote X6='{86B3F2D6-AC2B-0016-8AE1-F2F77F781B0C}'")
+
+Set $UninstallLog$ = $LogDir$ + "\" + $ProductId$ + ".uninstall_log.txt"
+
+;==========================================================================================================
+; Program logic
+
+; Removing older versions
+if ($remove_old_versions$ = "true")
+  comment "Remove old versions set - thus starting to search for it..."
+  Message "Searching for previous installed Endnote versions, please wait..."
+  sub_remove_really_old_versions
+  for %aktmsi% in $UninstList$ do sub_remove_x_versions_loop
+endif
+
+; Removing actual version
+if ($uninstall$="true")
+  ; this affects the actual Endnote version 
+  comment "Uninstall set to true, thus uninstalling current Endnote version."
+  Message "Uninstalling current Endnote version, please wait..."
+  Set $UninstMsiId$ = $MsiId$ 	
+  Set $UninstName$ = $PrettyName$
+  sub_remove_x_versions
+endif 
+
+;==========================================================================================================
+; Functions
+
+[sub_remove_x_versions_loop]
+; Looping through all MSI-IDs and removing them
+Set $UninstTempList$ = splitString("%aktmsi%","=")
+Set $UninstName$  = takeString(0,$UninstTempList$)
+Set $UninstMsiId$ = takeString(1,$UninstTempList$)
+sub_remove_x_versions
+
+[sub_remove_x_versions]
+; Only remove if the program is really installed. :)
+if not ((GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "") AND (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "")  )
+	Message "Uninstalling " + $UninstName$ + "..."
+  comment "MSI id " + $UninstMsiId$ + " found in registry, starting msiexec to remove " + $UninstName$
+	Winbatch_uninstall_msi
+	sub_check_exitcode
+else
+  comment "MSI id " + $UninstMsiId$ + " not found in registry, " + $UninstName$ + " probably not installed"
+endif
+
+[sub_remove_really_old_versions]
+; Uninstallaiton of Endnote 7 needs special treatment, newer versions have an msi installer.
+Set $UninstallProgram$ = "%ProgramFiles32Dir%\EndNote\UnWise.exe"
+if (FileExists($UninstallProgram$))
+	Message "Uninstalling Endnote 7..."
+	comment "Uninstalling Endnote 7"
+	Winbatch_uninstall
+	sub_check_exitcode
+endif
+
+[Winbatch_uninstall]
+"$UninstallProgram$" /A "$UninstallLog$"
+
+[Winbatch_uninstall_msi]
+msiexec /x  $UninstMsiId$ /l*v $UninstallLog$ /qb! REBOOT=ReallySuppress

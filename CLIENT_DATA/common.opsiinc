@@ -59,13 +59,13 @@ DefStringList $SearchProcess$
 ; Setting common variables
 
 Set $PrettyName$		               = "Endnote X7"
-Set $DesiredRegistryUpdateVersion$ = "285540352"    
+Set $DesiredRegistryUpdateVersion$ = "285671424"    
 Set $InstallDir$      						 = "%ProgramFiles32Dir%\EndNote X7"
 Set $MsiId$ 				            	 = '{86B3F2D6-AC2B-0017-8AE1-F2F77F781B0C}'
 Set $MSIInstaller$		             = "ENX7Inst.msi"
 Set $MinimumSpace$                 = "510 MB"
 Set $Exe$													 = "EndNote.exe"
-Set $ComboUpdatePatch$             = "ENX75ComboUpdate.msp"
+Set $ComboUpdatePatch$             = "ENX77ComboUpdate.msp"
 ;This value can be found at [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Installer\Products\ -> search for Endnote
 Set $RegistryInstallerClass$       = "6D2F3B68B2CA7100A81E2F7FF787B1C0"
 

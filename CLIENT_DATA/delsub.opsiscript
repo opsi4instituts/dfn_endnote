@@ -2,8 +2,7 @@
 ; Written by Eric Esser, Wissenschaftszentrum Berlin, eric.esser@wzb.eu.
 ; Inspired by uib gmbh (www.uib.de), Thomas Besser (KIT), Detlef Krummel (GEI) and Tobias Friede (Fraunhofer)
 
-
-;==========================================================================================================
+;============================================================================================================
 ; Variables
 
 DefVar $UninstMsiId$ 
@@ -14,11 +13,12 @@ DefStringList $UninstList$
 DefStringList $UninstTempList$ 
 
 ; Setting variables for delsub, please put the new old MSI id here after update
-Set $UninstList$ = addtolist($UninstList$, "Endnote 8='{27625A79-D272-41EF-844B-6EAC87D4A51E}'")
-Set $UninstList$ = addtolist($UninstList$, "Endnote X2='{002B1E90-3241-4D45-8831-E89020F8E7E6}'")
-Set $UninstList$ = addtolist($UninstList$, "Endnote X4='{86B3F2D6-AC2B-0014-8AE1-F2F77F781B0C}'")
-Set $UninstList$ = addtolist($UninstList$, "Endnote X5='{86B3F2D6-AC2B-0015-8AE1-F2F77F781B0C}'")
-Set $UninstList$ = addtolist($UninstList$, "Endnote X6='{86B3F2D6-AC2B-0016-8AE1-F2F77F781B0C}'")
+Set $UninstList$ = addtolist($UninstList$, "EndNote 8={27625A79-D272-41EF-844B-6EAC87D4A51E}")
+Set $UninstList$ = addtolist($UninstList$, "EndNote X2={002B1E90-3241-4D45-8831-E89020F8E7E6}")
+Set $UninstList$ = addtolist($UninstList$, "EndNote X4={86B3F2D6-AC2B-0014-8AE1-F2F77F781B0C}")
+Set $UninstList$ = addtolist($UninstList$, "EndNote X5={86B3F2D6-AC2B-0015-8AE1-F2F77F781B0C}")
+Set $UninstList$ = addtolist($UninstList$, "EndNote X6={86B3F2D6-AC2B-0016-8AE1-F2F77F781B0C}")
+Set $UninstList$ = addtolist($UninstList$, "EndNote X7={86B3F2D6-AC2B-0017-8AE1-F2F77F781B0C}")
 
 Set $UninstallLog$ = $LogDir$ + "\" + $ProductId$ + ".uninstall_log.txt"
 
@@ -55,11 +55,14 @@ sub_remove_x_versions
 
 [sub_remove_x_versions]
 ; Only remove if the program is really installed. :)
-if not ((GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "") AND (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "")  )
+if not ((GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "") AND (GetRegistryStringValue64("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "")  )
 	Message "Uninstalling " + $UninstName$ + "..."
   comment "MSI id " + $UninstMsiId$ + " found in registry, starting msiexec to remove " + $UninstName$
 	Winbatch_uninstall_msi
 	sub_check_exitcode
+	Set $DesktopIconName$ = $UninstName$ 
+	LinkFolder_delete
+	Set $DesktopIconName$ = $PrettyName$
 else
   comment "MSI id " + $UninstMsiId$ + " not found in registry, " + $UninstName$ + " probably not installed"
 endif
@@ -74,8 +77,9 @@ if (FileExists($UninstallProgram$))
 	sub_check_exitcode
 endif
 
+[Winbatch_uninstall_msi]
+msiexec /x $UninstMsiId$ /qb! /l*v $UninstallLog$ REBOOT=ReallySuppress
+
 [Winbatch_uninstall]
 "$UninstallProgram$" /A "$UninstallLog$"
 
-[Winbatch_uninstall_msi]
-msiexec /x  $UninstMsiId$ /l*v $UninstallLog$ /qb! REBOOT=ReallySuppress

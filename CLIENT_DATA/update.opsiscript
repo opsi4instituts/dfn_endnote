@@ -20,12 +20,18 @@ comment "Start updating Endnote"
 Message "Updating Endnote to version " + $ProgramVersion$
 
 ; Find the current update version of the acutal base program, e.g. Endnote X7.x
-Set $CurrentRegistryUpdateVersion$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Installer\Products\6D2F3B68B2CA7100A81E2F7FF787B1C0\] Version")
+Set $CurrentRegistryUpdateVersion$ = GetRegistryStringValue("[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Installer\Products\" + $RegistryInstallerClass$ + "\] Version")
 Set $VersionComparisonResult$ = CompareDotSeparatedNumbers($CurrentRegistryUpdateVersion$, $DesiredRegistryUpdateVersion$)
-if ($VersionComparisonResult$ = "-1")
-  ; If the desired update version is higher as the current one, make the update, otherwise skip it.
-  Winbatch_update
-  sub_check_exitcode
+
+; If the desired update version is higher as the current one, make the update, otherwise skip it.
+if ($VersionComparisonResult$ = "-1") 
+  if (not($ComboUpdatePatch$ = ""))
+    Winbatch_update
+    sub_check_exitcode
+  else
+    comment "No update patch in opsi package defined, cancelling update"      
+    LogWarning "No update patch in opsi package defined, cancelling update" 
+  endif 
 else
   comment "Endnote already up to date, canceling update"
 endif

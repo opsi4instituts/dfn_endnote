@@ -99,6 +99,7 @@ else
 	
   ; Setting the desktop icon or removing it - as set in the config editor
   if $Property_DesktopIcon$ = "True"
+	  Set $DesktopIconName$ = $PrettyName$
     LinkFolder_create
   else
     LinkFolder_delete
@@ -123,8 +124,47 @@ Sub_check_exitcode
 msiexec /passive /norestart /i "$LogDir$\$TmpSubDirectory$\$MSIInstaller$" $TransformString$ INSTALLALLCONTENTFILES="$INSTALLALLCONTENTFILES$" FFTUSEISILINKS="$FFTUSEISILINKS$" FFTUSEPUBMED="$FFTUSEPUBMED$" FFTUSEDOI="$FFTUSEDOI$" FFTUSEOPENURL="$FFTUSEOPENURL$" FFTOPENURLRESOLVER="$FFTOPENURLRESOLVER$" USERCANAPPLYUPDATES="$USERCANAPPLYUPDATES$" FFTAUTHENTICATEURL="$FFTAUTHENTICATEURL$" /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=2 REBOOT=ReallySuppress 
 
 [Files_copy_license]
-copy "%ScriptPath%\files\ENX7Inst.msi" "$LogDir$\$TmpSubDirectory$"
+copy "%ScriptPath%\files\$MSIInstaller$" "$LogDir$\$TmpSubDirectory$"
 copy "%ScriptPath%\custom\License.dat" "$LogDir$\$TmpSubDirectory$"
 
 [Files_delete_tmp]
 del "$LogDir$\$TmpSubDirectory$\"
+
+;==========================================================================================================
+; Functions
+
+[sub_remove_x_versions_loop]
+; Looping through all MSI-IDs and removing them
+Set $UninstTempList$ = splitString("%aktmsi%","=")
+Set $UninstName$  = takeString(0,$UninstTempList$)
+Set $UninstMsiId$ = takeString(1,$UninstTempList$)
+sub_remove_x_versions
+
+[sub_remove_x_versions]
+; Only remove if the program is really installed. :)
+if not ((GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "") AND (GetRegistryStringValue64("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $UninstMsiId$ + "] DisplayName") = "")  )
+	Message "Uninstalling " + $UninstName$ + "..."
+  comment "MSI id " + $UninstMsiId$ + " found in registry, starting msiexec to remove " + $UninstName$
+	Winbatch_uninstall_msi
+	sub_check_exitcode
+	Set $DesktopIconName$ = $UninstName$ 
+	LinkFolder_delete
+else
+  comment "MSI id " + $UninstMsiId$ + " not found in registry, " + $UninstName$ + " probably not installed"
+endif
+
+[sub_remove_really_old_versions]
+; Uninstallaiton of Endnote 7 needs special treatment, newer versions have an msi installer.
+Set $UninstallProgram$ = "%ProgramFiles32Dir%\EndNote\UnWise.exe"
+if (FileExists($UninstallProgram$))
+	Message "Uninstalling Endnote 7..."
+	comment "Uninstalling Endnote 7"
+	Winbatch_uninstall
+	sub_check_exitcode
+endif
+
+[Winbatch_uninstall_msi]
+msiexec /x $UninstMsiId$ /qb! /l*v $UninstallLog$ REBOOT=ReallySuppress
+
+[Winbatch_uninstall]
+"$UninstallProgram$" /A "$UninstallLog$"

@@ -41,7 +41,7 @@ DefVar $Exe$
 DefVar $remove_old_versions$
 DefVar $CustomPostInstall$
 DefVar $DesiredRegistryUpdateVersion$
-DefVar $RegistryInstallerClass$ 
+DefVar $RegistryInstallerClass$
 
 ; Checktask
 DefVar $processVAR$
@@ -58,16 +58,15 @@ DefStringList $SearchProcess$
 ; USUALLY FOR AN PROGRAM UPDATE THIS IS THE ONLY PLACE WHERE VALUES OUGHT TO BE CHANGED, EXCEPT PUTTING THE OLD MSI-ID TO DELSUB
 ; Setting common variables
 
-Set $PrettyName$		               = "Endnote X7"
-Set $DesiredRegistryUpdateVersion$ = "285671425"    
-Set $InstallDir$      						 = "%ProgramFiles32Dir%\EndNote X7"
-Set $MsiId$ 				            	 = '{86B3F2D6-AC2B-0017-8AE1-F2F77F781B0C}'
-Set $MSIInstaller$		             = "ENX7Inst.msi"
-Set $MinimumSpace$                 = "510 MB"
+Set $PrettyName$		               = "EndNote X8"
+Set $DesiredRegistryUpdateVersion$ = "301989888"   
+Set $RegistryInstallerClass$       = "6D2F3B68B2CA8100A81E2F7FF787B1C0" 
+Set $InstallDir$      						 = "%ProgramFiles32Dir%\EndNote X8"
+Set $MsiId$ 				            	 = '{86B3F2D6-AC2B-0018-8AE1-F2F77F781B0C}'
+Set $MSIInstaller$		             = "ENX8Inst.msi"
+Set $MinimumSpace$                 = "550 MB"
 Set $Exe$													 = "EndNote.exe"
-Set $ComboUpdatePatch$             = "ENX771ComboUpdate.msp"
-;This value can be found at [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Installer\Products\ -> search for Endnote
-Set $RegistryInstallerClass$       = "6D2F3B68B2CA7100A81E2F7FF787B1C0"
+Set $ComboUpdatePatch$             = ""
 
 
 ;----------------------------------------------------------------------------------------------
@@ -103,3 +102,4 @@ for %task% in $SearchProcess$ do sub_checkfunktion
 
 ; Kill running Endnote task
 Killtask $Exe$
+

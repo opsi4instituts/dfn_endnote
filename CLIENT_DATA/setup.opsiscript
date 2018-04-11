@@ -85,7 +85,7 @@ else
     comment "Installing Endnote base program"
     message "Installing Endnote base program"
     sub_install
-    noUpdateScript
+    ;noUpdateScript
 	  
 	  ; Include post install file in custom folder via OPSI property 
 	  comment "include custom post install file"

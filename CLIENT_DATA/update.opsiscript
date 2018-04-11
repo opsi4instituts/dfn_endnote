@@ -16,6 +16,11 @@ DefVar $VersionComparisonResult$
 ;==========================================================================================================
 ; Program logic
 
+if ((GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") and (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") ) 
+  LogError "Tried to update Endnote, but it seems not properly installed"
+  isFatalError "Endnote not installed properly"
+endif
+
 comment "Start updating Endnote"
 Message "Updating Endnote to version " + $ProgramVersion$
 

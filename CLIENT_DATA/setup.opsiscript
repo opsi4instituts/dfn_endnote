@@ -124,8 +124,8 @@ Sub_check_exitcode
 msiexec /passive /norestart /i "$LogDir$\$TmpSubDirectory$\$MSIInstaller$" $TransformString$ INSTALLALLCONTENTFILES="$INSTALLALLCONTENTFILES$" FFTUSEISILINKS="$FFTUSEISILINKS$" FFTUSEPUBMED="$FFTUSEPUBMED$" FFTUSEDOI="$FFTUSEDOI$" FFTUSEOPENURL="$FFTUSEOPENURL$" FFTOPENURLRESOLVER="$FFTOPENURLRESOLVER$" USERCANAPPLYUPDATES="$USERCANAPPLYUPDATES$" FFTAUTHENTICATEURL="$FFTAUTHENTICATEURL$" /l* "$LogDir$\$ProductId$.install_log.txt" /qb! ALLUSERS=2 REBOOT=ReallySuppress 
 
 [Files_copy_license]
-copy "%ScriptPath%\files\$MSIInstaller$" "$LogDir$\$TmpSubDirectory$"
-copy "%ScriptPath%\custom\License.dat" "$LogDir$\$TmpSubDirectory$"
+copy "%ScriptPath%\files\*" "$LogDir$\$TmpSubDirectory$"
+copy "%ScriptPath%\custom\*" "$LogDir$\$TmpSubDirectory$"
 
 [Files_delete_tmp]
 del "$LogDir$\$TmpSubDirectory$\"

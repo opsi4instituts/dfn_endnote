@@ -58,15 +58,15 @@ DefStringList $SearchProcess$
 ; USUALLY FOR AN PROGRAM UPDATE THIS IS THE ONLY PLACE WHERE VALUES OUGHT TO BE CHANGED, EXCEPT PUTTING THE OLD MSI-ID TO DELSUB
 ; Setting common variables
 
-Set $PrettyName$		               = "EndNote X8"
-Set $DesiredRegistryUpdateVersion$ = "302120960"   
-Set $RegistryInstallerClass$       = "6D2F3B68B2CA8100A81E2F7FF787B1C0" 
-Set $InstallDir$      						 = "%ProgramFiles32Dir%\EndNote X8"
-Set $MsiId$ 				            	 = '{86B3F2D6-AC2B-0018-8AE1-F2F77F781B0C}'
-Set $MSIInstaller$		             = "ENX8Inst.msi"
+Set $PrettyName$		               = "EndNote X9"
+Set $DesiredRegistryUpdateVersion$ = "318767104"   
+Set $RegistryInstallerClass$       = "6D2F3B68B2CA9100A81E2F7FF787B1C0" 
+Set $InstallDir$      						 = "%ProgramFiles32Dir%\EndNote X9"
+Set $MsiId$ 				            	 = '{86B3F2D6-AC2B-0019-8AE1-F2F77F781B0C}'
+Set $MSIInstaller$		             = "ENX9Inst.msi"
 Set $MinimumSpace$                 = "750 MB"
 Set $Exe$													 = "EndNote.exe"
-Set $ComboUpdatePatch$             = "ENX82Update.msp"
+Set $ComboUpdatePatch$             = ""
 
 
 ;----------------------------------------------------------------------------------------------

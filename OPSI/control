@@ -9,7 +9,9 @@ id: dfn_endnote
 name: Endnote
 description: EndNote ist ein Literaturverwaltungsprogramm, welches sich auch als Plugin in Microsoft Office integriert. // EndNote is a reference management software, which integrates in Microsoft Office.
 advice: Programme von Microsoft Office oder LibreOffice/OpenOffice muessen fuer die Installation geschlossen sein, bei einem Update gilt das auch für Endnote. Saemtliche andere auf dem Rechner installierte Versionen von Endnote werden bei der Installation entfernt. // Microsoft Office programs have to be closed on installtion. Older versions of Endnote will be removed on installation.
-version: 19.0.0
+
+
+version: 19.1.0
 priority: 0
 licenseRequired: False
 productClasses: 
@@ -151,6 +153,12 @@ description: Show dialog to the user which office program prevents the installat
 default: True
 
 [Changelog]
+dfn_endnote (19.1.0-1) stable; urgency=low
+
+Update auf 19.1.0, exe getauscht.
+
+ -- Eric Esser <eric.esser@wzb.eu>  Thu, 14 Mar 2019 12:00:14 +0000
+
 dfn_endnote (19.0.0-1) stable; urgency=low
 
 Update auf 19.0.0, exe getauscht

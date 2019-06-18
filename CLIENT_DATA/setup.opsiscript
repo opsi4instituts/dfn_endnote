@@ -81,7 +81,7 @@ else
 	endif
 	
   ; Just install the base program if not already installed or if set to forcereinstall in config ed. After installation there is no need for running the update script
-  if (($forcereinstall$ = "true") or ( (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") and (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") ) )
+  if (($forcereinstall$ = "true") or ( (GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") and (GetRegistryStringValue64("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + $MsiId$ + "] DisplayName") = "") ) )
     comment "Installing Endnote base program"
     message "Installing Endnote base program"
     sub_install

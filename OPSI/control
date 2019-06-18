@@ -11,7 +11,9 @@ description: EndNote ist ein Literaturverwaltungsprogramm, welches sich auch als
 advice: Programme von Microsoft Office oder LibreOffice/OpenOffice muessen fuer die Installation geschlossen sein, bei einem Update gilt das auch für Endnote. Saemtliche andere auf dem Rechner installierte Versionen von Endnote werden bei der Installation entfernt. // Microsoft Office programs have to be closed on installtion. Older versions of Endnote will be removed on installation.
 
 
-version: 19.1.0
+
+
+version: 19.2.0
 priority: 0
 licenseRequired: False
 productClasses: 
@@ -153,6 +155,12 @@ description: Show dialog to the user which office program prevents the installat
 default: True
 
 [Changelog]
+dfn_endnote (19.2.0-1) stable; urgency=low
+* Bugfix: Programm überspringt Neuinstallation, wenn schon installiert und forcereinstall auf false
+* Update auf 19.2.0, exe getauscht.
+
+ -- Eric Esser <eric.esser@wzb.eu>  Tue, 18 Jun 2019 15:19:51 +0000
+
 dfn_endnote (19.1.0-1) stable; urgency=low
 
 Update auf 19.1.0, exe getauscht.
